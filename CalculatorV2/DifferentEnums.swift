@@ -37,11 +37,11 @@ enum OperationError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .divideByZero:
-            return "text"
+            return "ERROR: cannot be divided by 0"
         case .sqrtOfNegative:
-            return "text"
+            return "ERROR: you cannot get the root of a negative number"
         case .trigonometricError:
-            return "text"
+            return "ERROR: function not defined, you entered the wrong angle"
         }
     }
 }

@@ -17,7 +17,8 @@ class ViewController: UIViewController {
     var secondOperand = 0.0
     var resultOperation: Double {
         get {
-            return Double(textLabel.text ?? "") ?? 0
+            guard let text = textLabel.text else { return 0 }
+            return Double(text) ?? 0
         }
         
         set {
@@ -56,8 +57,8 @@ class ViewController: UIViewController {
         
         if textLabel.text!.count < 15 {
             
-            if isNumberAdded {
-                textLabel.text = textLabel.text! + number
+            if isNumberAdded, let text = textLabel.text {
+                textLabel.text = text + number
             } else {
                 if number == "0" {
                     textLabel.text = number
@@ -86,7 +87,9 @@ class ViewController: UIViewController {
         
         secondOperand = resultOperation
         
-        if isOperandAdded, (firstOperand != 0 || secondOperand != 0) {
+        if secondOperand == 0 {
+            textLabel.text = OperationError.divideByZero.errorDescription
+        } else if isOperandAdded, (firstOperand != 0 || secondOperand != 0) {
             
             let sign = Operads(rawValue: signOperand)
             
@@ -173,54 +176,92 @@ func countNumber(str: String) -> String {
     }
     
     @IBAction func touchSinButton(_ sender: UIButton) {
-        let sinus = sin(resultOperation * Double.pi / 180)
-        resultOperation = sinus
-//        print(sinus)
+        
+        if outTheRange(num: resultOperation) {
+            textLabel.text = OperationError.trigonometricError.errorDescription
+        } else {
+            let sinus = sin(resultOperation * Double.pi / 180)
+            resultOperation = sinus
+        }
     }
     
     @IBAction func touchCosButton(_ sender: UIButton) {
+        
+        if outTheRange(num: resultOperation) {
+            textLabel.text = OperationError.trigonometricError.errorDescription
+        } else {
         let cosinus = cos(resultOperation * Double.pi / 180)
         resultOperation = cosinus
+        }
     }
     
     @IBAction func touchCtgButton(_ sender: UIButton) {
-        let sinus = sin(resultOperation * Double.pi / 180)
-        let cosinus = cos(resultOperation * Double.pi / 180)
-        resultOperation = cosinus / sinus
+        
+        if (firstOperand != 0 || firstOperand != 180 || firstOperand != 360),
+           !outTheRange(num: firstOperand) {
+            let sinus = sin(resultOperation * Double.pi / 180)
+            let cosinus = cos(resultOperation * Double.pi / 180)
+            resultOperation = cosinus / sinus
+        } else {
+            textLabel.text = OperationError.trigonometricError.errorDescription
+        }
     }
     
-    @IBAction func touchTgButton(_ sender: Any) {
-        let sinus = sin(resultOperation * Double.pi / 180)
-        let cosinus = cos(resultOperation * Double.pi / 180)
-        resultOperation = sinus / cosinus
+    @IBAction func touchTgButton(_ sender: UIButton) {
+            
+        if (firstOperand != 90 || firstOperand != 270),
+           !outTheRange(num: firstOperand) {
+            let sinus = sin(resultOperation * Double.pi / 180)
+            let cosinus = cos(resultOperation * Double.pi / 180)
+            resultOperation = sinus / cosinus
+        } else {
+            textLabel.text = OperationError.trigonometricError.errorDescription
+        }
     }
     
     @IBAction func touchXpov2Button(_ sender: UIButton) {
         resultOperation = pow(resultOperation, 2)
+        isNumberAdded = false
     }
     
     @IBAction func touchEButton(_ sender: UIButton) {
         resultOperation = 2.71828182845905
+        isNumberAdded = false
     }
     
     @IBAction func TouchPiButton(_ sender: UIButton) {
         resultOperation = Double.pi
+        isNumberAdded = false
     }
     
     @IBAction func touchSqrtButton(_ sender: UIButton) {
-        resultOperation = sqrt(resultOperation)
+        if firstOperand < 0 {
+            resultOperation = sqrt(resultOperation)
+            isNumberAdded = false
+        } else {
+            textLabel.text = OperationError.sqrtOfNegative.errorDescription
+        }
     }
     
     @IBAction func touchXSqrtYButton(_ sender: UIButton) {
-        firstOperand = resultOperation
-        isSqrtAdded = true
-        isNumberAdded = false
+            
+        if firstOperand < 0 {
+            firstOperand = resultOperation
+            isSqrtAdded = true
+            isNumberAdded = false
+        } else {
+            textLabel.text = OperationError.sqrtOfNegative.errorDescription
+        }
     }
     
     @IBAction func touchXPovYButton(_ sender: UIButton) {
         firstOperand = resultOperation
         isPowAdded = true
         isNumberAdded = false
+    }
+    
+    func outTheRange(num: Double) -> Bool {
+        return (num <= 0 || num >= 360) ? true : false
     }
     
 }
