@@ -106,13 +106,23 @@ class ViewController: UIViewController {
         }
         
         if isSqrtAdded {
-            let nthRoot = pow(secondOperand, (1/firstOperand))
-            textLabel.text = findPoint(str: "\(nthRoot)")
+            
+            if secondOperand < 0 {
+                textLabel.text = OperationError.sqrtOfNegative.errorDescription
+            } else {
+                let nthRoot = Operads(rawValue: signOperand)
+                let res = nthRoot?.usedOperation(numOne: firstOperand, numTwo: secondOperand)
+                guard let text = res else {return}
+                textLabel.text = findPoint(str: "\(text)")
+                
+            }
         }
         
         if isPowAdded {
-            let nthRoot = pow(firstOperand, secondOperand)
-            textLabel.text = findPoint(str: "\(nthRoot)")
+            let nthRoot = Operads(rawValue: signOperand)
+            let res = nthRoot?.usedOperation(numOne: firstOperand, numTwo: secondOperand)
+            guard let text = res else {return}
+            textLabel.text = findPoint(str: "\(text)")
         }
     }
     
@@ -245,16 +255,18 @@ func countNumber(str: String) -> String {
     
     @IBAction func touchXSqrtYButton(_ sender: UIButton) {
             
-        if firstOperand < 0 {
+            guard let text = sender.currentTitle else {return}
+            signOperand = text
             firstOperand = resultOperation
             isSqrtAdded = true
             isNumberAdded = false
-        } else {
-            textLabel.text = OperationError.sqrtOfNegative.errorDescription
-        }
+
     }
     
     @IBAction func touchXPovYButton(_ sender: UIButton) {
+        
+        guard let text = sender.currentTitle else {return}
+        signOperand = text
         firstOperand = resultOperation
         isPowAdded = true
         isNumberAdded = false

@@ -14,6 +14,8 @@ enum Operads: String {
     case minus = "-"
     case multiple = "*"
     case division = "/"
+    case xpowy = "x^y"
+    case xsqrty = "x√y"
     
     func usedOperation(numOne: Double, numTwo: Double) -> Double {
         switch self {
@@ -25,6 +27,10 @@ enum Operads: String {
             return numOne * numTwo
         case .division:
             return numOne / numTwo
+        case .xpowy:
+            return pow(numOne, numTwo)
+        case .xsqrty:
+            return pow(numTwo, (1/numOne))
         }
     }
 }
